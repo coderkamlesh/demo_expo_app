@@ -13,6 +13,7 @@ import {
     ScrollView,
     StyleSheet,
     Text,
+    TextInput,
     TouchableOpacity,
     View
 } from "react-native";
@@ -75,6 +76,7 @@ export default function BiometricScreen() {
     const [capturing, setCapturing] = useState(false);
     const [result, setResult] = useState<BiometricCaptureResult | null>(null);
     const [rdFound, setRdFound] = useState<boolean | null>(null);
+    const [wadh, setWadh] = useState("");
 
     // Check for RD service on mount
     useEffect(() => {
@@ -130,6 +132,7 @@ export default function BiometricScreen() {
             count: 1,
             timeout: 60,
             showNativeUI: true,
+            wadh: wadh,
         };
 
         try {
@@ -234,6 +237,20 @@ export default function BiometricScreen() {
                     );
                 })}
             </View>
+
+            {/* WADH Input for Face Auth */}
+            {selected.modality === "FACE" && (
+                <View style={styles.wadhContainer}>
+                    <Text style={styles.wadhLabel}>WADH Token (Face Auth)</Text>
+                    <TextInput
+                        style={styles.wadhInput}
+                        placeholder="Enter WADH from your backend APIs..."
+                        placeholderTextColor="#666"
+                        value={wadh}
+                        onChangeText={setWadh}
+                    />
+                </View>
+            )}
 
             {/* Capture / Cancel button */}
             {capturing ? (
@@ -418,6 +435,25 @@ const styles = StyleSheet.create({
     },
 
     /* Device selector grid */
+    wadhContainer: {
+        marginTop: 10,
+        marginBottom: 10,
+    },
+    wadhLabel: {
+        fontSize: 12,
+        color: "#ccc",
+        marginBottom: 6,
+        fontWeight: "600",
+    },
+    wadhInput: {
+        backgroundColor: "#161616",
+        borderWidth: 1,
+        borderColor: "#333",
+        borderRadius: 10,
+        padding: 12,
+        color: "#fff",
+        fontSize: 14,
+    },
     selectorGrid: {
         flexDirection: "row",
         flexWrap: "wrap",

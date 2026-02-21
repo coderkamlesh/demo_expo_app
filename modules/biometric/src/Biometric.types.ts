@@ -92,6 +92,8 @@ export type CaptureOptions = {
   timeout?: number;
   /** Show the native RD service capture UI overlay. Default: true */
   showNativeUI?: boolean;
+  /** Wrapper for Aadhaar Data Hash (WADH), provided by your backend AUA. Mandatory for Face RD authentication to succeed. */
+  wadh?: string;
 };
 
 // ─── Native Events ────────────────────────────────────────────────────────────

@@ -84,6 +84,7 @@ class CaptureOptionsRecord : Record {
   @Field var count: Int = 1
   @Field var timeout: Int = 60
   @Field var showNativeUI: Boolean = true
+  @Field var wadh: String = ""
 }
 
 // ─── Module ───────────────────────────────────────────────────────────────────
@@ -188,7 +189,8 @@ class BiometricModule : Module() {
       val pidOptions = buildPidOptions(
         modality = currentModality,
         count    = options.count.coerceIn(1, 2),
-        timeout  = options.timeout * 1000        // RD service expects milliseconds
+        timeout  = options.timeout * 1000,       // RD service expects milliseconds
+        wadh     = options.wadh
       )
 
       Log.d(TAG, "PID Options XML: $pidOptions")
@@ -382,7 +384,7 @@ class BiometricModule : Module() {
    * Builds the PID Options XML string sent to the RD service.
    * Format is defined in UIDAI RD Service Registration v2.0 specification.
    */
-  private fun buildPidOptions(modality: String, count: Int, timeout: Int): String {
+  private fun buildPidOptions(modality: String, count: Int, timeout: Int, wadh: String): String {
     val ts = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US).format(Date())
     val fCount = if (modality == "FINGER") count else 0
     val iCount = if (modality == "IRIS")   count else 0
@@ -391,7 +393,7 @@ class BiometricModule : Module() {
 
     return """<?xml version="1.0" encoding="UTF-8"?>
 <PidOptions ver="1.0">
-  <Opts fCount="$fCount" fType="0" iCount="$iCount" iType="0" pCount="$pCount" pType="0" format="0" pidVer="2.0" timeout="$timeout" env="P" wadh="" posh="UNKNOWN" />
+  <Opts fCount="$fCount" fType="0" iCount="$iCount" iType="0" pCount="$pCount" pType="0" format="0" pidVer="2.0" timeout="$timeout" env="P" wadh="$wadh" posh="UNKNOWN" />
 </PidOptions>"""
   }
 
