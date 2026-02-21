@@ -391,17 +391,7 @@ class BiometricModule : Module() {
 
     return """<?xml version="1.0" encoding="UTF-8"?>
 <PidOptions ver="1.0">
-  <Opts fCount="$fCount" fType="0" iCount="$iCount" iType="0" pCount="$pCount"
-        pType="0" format="0" pidVer="2.0" timeout="$timeout"
-        posh="UNKNOWN" env="P" wadh="" PA="" />
-  <Demo/>
-  <PidExt count="$count">
-    <Aadsha>
-      <AppId>UIDAI</AppId>
-      <TransactionId>TXN_${ts.replace(":", "").replace("-", "").replace("T", "")}</TransactionId>
-      <BioType>$modality</BioType>
-    </Aadsha>
-  </PidExt>
+  <Opts fCount="$fCount" fType="0" iCount="$iCount" iType="0" pCount="$pCount" pType="0" format="0" pidVer="2.0" timeout="$timeout" env="P" wadh="" posh="UNKNOWN" />
 </PidOptions>"""
   }
 
