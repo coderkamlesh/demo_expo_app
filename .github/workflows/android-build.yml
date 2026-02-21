@@ -1,0 +1,52 @@
+name: Android Direct APK Build
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch: # Ye aapko GitHub UI se manually build start karne ki permission deta hai
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: 📦 Install dependencies
+        run: npm install
+
+      - name: ☕ Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: 🚀 Setup Expo
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          packager: npm
+
+      - name: 🛠️ Prebuild Android Native Files
+        run: npx expo prebuild --platform android --clean
+
+      - name: 🔨 Build Android APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: 📤 Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk-build
+          path: android/app/build/outputs/apk/debug/app-debug.apk

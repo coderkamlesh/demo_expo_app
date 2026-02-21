@@ -1,0 +1,50 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <!--
+    USB OTG permission – required for fingerprint / iris RD devices
+    that connect via USB (e.g. Morpho MSO 1300, Mantra MFS100, Startek FM220).
+    The RD service APK handles the actual USB communication;
+    we just need the host app to declare this so Android doesn't block it.
+  -->
+  <uses-feature
+    android:name="android.hardware.usb.host"
+    android:required="false" />
+
+  <!-- Camera permission required by AadhaarFaceRD and other face RD services -->
+  <uses-permission android:name="android.permission.CAMERA" />
+
+  <!--
+    Android 11+ (API 30) Package Visibility:
+    Apps MUST declare which intents they want to query via PackageManager.
+    Without this block, queryIntentActivities() silently returns an empty list
+    even when the target APK (e.g. Morpho RD Service) is installed.
+    All 6 UIDAI-standardised RD Service action strings are listed here so that
+    fingerprint, iris and face RD services are all discoverable.
+  -->
+  <queries>
+    <!-- Fingerprint RD Service -->
+    <intent>
+      <action android:name="in.gov.uidai.rdservice.fp.INFO" />
+    </intent>
+    <intent>
+      <action android:name="in.gov.uidai.rdservice.fp.CAPTURE" />
+    </intent>
+
+    <!-- Iris RD Service -->
+    <intent>
+      <action android:name="in.gov.uidai.rdservice.iris.INFO" />
+    </intent>
+    <intent>
+      <action android:name="in.gov.uidai.rdservice.iris.CAPTURE" />
+    </intent>
+
+    <!-- Face RD Service -->
+    <intent>
+      <action android:name="in.gov.uidai.rdservice.face.INFO" />
+    </intent>
+    <intent>
+      <action android:name="in.gov.uidai.rdservice.face.CAPTURE" />
+    </intent>
+  </queries>
+
+</manifest>
