@@ -90,6 +90,9 @@ export default function BiometricScreen() {
             (res: BiometricCaptureResult) => {
                 setCapturing(false);
                 setResult(res);
+                console.log("\n====== BIOMETRIC CAPTURE RESULT (LISTENER) ======");
+                console.log(JSON.stringify(res, null, 2));
+                console.log("=================================================\n");
             }
         );
 
@@ -137,9 +140,13 @@ export default function BiometricScreen() {
 
         try {
             const res = await BiometricModule.startCapture(opts);
+            console.log("\n====== BIOMETRIC CAPTURE RESULT (DIRECT CALL) ======");
+            console.log(JSON.stringify(res, null, 2));
+            console.log("====================================================\n");
             // onCaptureComplete listener already sets state; this is a fallback
             setResult(res);
         } catch (err: any) {
+            console.error("Biometric Capture Error:", err);
             setResult({
                 status: "ERROR",
                 message: err?.message ?? "Unknown error",

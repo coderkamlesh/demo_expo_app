@@ -353,14 +353,14 @@ class BiometricModule : Module() {
 
     val pidDataXml = data?.getStringExtra(KEY_PID_DATA) 
       ?: data?.getStringExtra("response")
-    val errCode    = data?.getStringExtra(KEY_ERRCODE) ?: "-1"
-    val errInfo    = data?.getStringExtra(KEY_ERRINFO) ?: "Unknown error"
+    val intentErrCode    = data?.getStringExtra(KEY_ERRCODE) ?: "-1"
+    val intentErrInfo    = data?.getStringExtra(KEY_ERRINFO) ?: "Unknown error"
 
     if (pidDataXml.isNullOrBlank()) {
       val captureResult = CaptureResultRecord().apply {
         status  = "ERROR"
-        message = errInfo
-        error   = "Empty PID_DATA in RD service response (errCode=$errCode)"
+        message = intentErrInfo
+        error   = "Empty PID_DATA in RD service response (errCode=$intentErrCode)"
       }
       promise.resolve(captureResult)
       sendEvent("onCaptureComplete", captureResultToMap(captureResult))
@@ -368,12 +368,18 @@ class BiometricModule : Module() {
     }
 
     // Parse the PID XML returned by the RD service
-    val pidBlock = parsePidXml(pidDataXml, currentModality, errCode, errInfo)
+    val pidBlock = parsePidXml(pidDataXml, currentModality, intentErrCode, intentErrInfo)
+    
+    // ALWAYS use the values from pidBlock, because Morpho and most RD services 
+    // provide the `errCode` inside the XML <Resp> tag, not in the Intent extras.
+    val finalErrCode = pidBlock.errorCode
+    val finalErrInfo = pidBlock.errorInfo
+
     val captureResult = CaptureResultRecord().apply {
-      status  = if (errCode == "0") "SUCCESS" else "ERROR"
+      status  = if (finalErrCode == "0") "SUCCESS" else "ERROR"
       this.pidBlock = pidBlock
-      message = if (errCode == "0") "Biometric captured successfully" else errInfo
-      error   = if (errCode != "0") errInfo else null
+      message = if (finalErrCode == "0") "Biometric captured successfully" else finalErrInfo
+      error   = if (finalErrCode != "0") finalErrInfo else null
     }
 
     promise.resolve(captureResult)
