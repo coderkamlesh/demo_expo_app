@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, Button, Text, View } from 'react-native';
+import { Alert, Button, StyleSheet, Text, View } from 'react-native';
 import { BIOMETRIC_PROVIDERS } from '../constants/biometric.constants';
 import BiometricModule from '../modules/biometric'; // Auto-generated wrapper
 import { generatePidOptions } from '../utils/biometric.utils';
@@ -28,15 +28,15 @@ const Biometric = () => {
 
         // Step 3: Trigger Capture Intent
         try {
-            const resultXml = await BiometricModule.captureBiometric(
+            const result = await BiometricModule.captureBiometric(
                 provider.package,
                 provider.action,
                 pidOptionsXml
             );
 
-            console.log("Capture Success! XML Data: ", resultXml);
+            // Note: Native module returns a JSON string array [pidData, deviceInfo]
+            console.log("Capture Result: ", result);
             Alert.alert("Success", "Biometric data captured successfully.");
-            // Next: Is resultXml ko apne backend par bhej dein
 
         } catch (error: any) {
             console.error("Capture Failed: ", error);
@@ -45,18 +45,40 @@ const Biometric = () => {
     };
 
     return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 15 }}>
-            <Text style={{ fontSize: 20, marginBottom: 20 }}>Select Biometric Device</Text>
+        <View style={styles.container}>
+            <Text style={styles.title}>Select Biometric Device</Text>
 
             {BIOMETRIC_PROVIDERS.map((provider: any) => (
-                <Button
-                    key={provider.id}
-                    title={`Scan with ${provider.label}`}
-                    onPress={() => handleCapture(provider)}
-                />
+                <View key={provider.id} style={styles.buttonWrapper}>
+                    <Button
+                        title={`Scan with ${provider.label}`}
+                        onPress={() => handleCapture(provider)}
+                    />
+                </View>
             ))}
         </View>
     );
 };
 
 export default Biometric;
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 15,
+        backgroundColor: '#f5f5f5',
+        padding: 20
+    },
+    title: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        marginBottom: 20,
+        color: '#333'
+    },
+    buttonWrapper: {
+        width: '100%',
+        marginVertical: 5
+    }
+});

@@ -1,8 +1,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <queries>
-        <package android:name="com.mantra.rdservice" />
+        <!-- Morpho -->
         <package android:name="com.scl.rdservice" />
-        <package android:name="com.mantra.iris.rdservice" />
-        <package android:name="in.gov.uidai.facerd" />
+        <package android:name="com.morpho.rdservice" />
+        <package android:name="com.idemia.rdservice" />
+        <!-- Mantra -->
+        <package android:name="com.mantra.rdservice" />
+        <!-- Action based query (Safe side ke liye) -->
+        <intent>
+            <action android:name="in.gov.uidai.rdservice.fp.CAPTURE" />
+        </intent>
     </queries>
 </manifest>
