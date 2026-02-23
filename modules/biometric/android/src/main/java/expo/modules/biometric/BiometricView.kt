@@ -1,30 +1,71 @@
 package expo.modules.biometric
 
-import android.content.Context
-import android.webkit.WebView
-import android.webkit.WebViewClient
-import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.viewevent.EventDispatcher
-import expo.modules.kotlin.views.ExpoView
+import android.app.Activity
+import android.content.Intent
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.Promise
 
-class BiometricView(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
-  // Creates and initializes an event dispatcher for the `onLoad` event.
-  // The name of the event is inferred from the value and needs to match the event name defined in the module.
-  private val onLoad by EventDispatcher()
+class BiometricModule : Module() {
+  private var pendingPromise: Promise? = null
+  private val RD_SERVICE_REQ_CODE = 1001
 
-  // Defines a WebView that will be used as the root subview.
-  internal val webView = WebView(context).apply {
-    layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
-    webViewClient = object : WebViewClient() {
-      override fun onPageFinished(view: WebView, url: String) {
-        // Sends an event to JavaScript. Triggers a callback defined on the view component in JavaScript.
-        onLoad(mapOf("url" to url))
+  override fun definition() = ModuleDefinition {
+    Name("Biometric")
+
+    // 1. Discovery Function: Check if app is installed
+    Function("isAppInstalled") { packageName: String ->
+      try {
+        val pm = appContext.reactContext?.packageManager
+        // Agar package mil gaya toh true return karega
+        pm?.getPackageInfo(packageName, 0)
+        true
+      } catch (e: Exception) {
+        // Package nahi mila (Exception aayi), matlab installed nahi hai
+        false
       }
     }
-  }
 
-  init {
-    // Adds the WebView to the view hierarchy.
-    addView(webView)
+    // 2. Capture Function: Send Intent to RD Service
+    AsyncFunction("captureBiometric") { packageName: String, action: String, pidOptions: String, promise: Promise ->
+      val activity = appContext.currentActivity
+      if (activity == null) {
+        promise.reject("ERR_ACTIVITY", "Current activity not found", null)
+        return@AsyncFunction
+      }
+
+      try {
+        val intent = Intent()
+        intent.setPackage(packageName)
+        intent.setAction(action)
+        intent.putExtra("PID_OPTIONS", pidOptions)
+
+        pendingPromise = promise
+        
+        activity.startActivityForResult(intent, RD_SERVICE_REQ_CODE)
+      } catch (e: Exception) {
+        promise.reject("ERR_INTENT", "Failed to launch RD Service: ${e.message}", e)
+        pendingPromise = null
+      }
+    }
+
+    // 3. Result Handler: Receive data back from RD Service
+    OnActivityResult { _, payload ->
+      if (payload.requestCode == RD_SERVICE_REQ_CODE) {
+        if (payload.resultCode == Activity.RESULT_OK) {
+          val data = payload.data
+          val pidData = data?.getStringExtra("PID_DATA")
+          
+          if (pidData != null) {
+            pendingPromise?.resolve(pidData)
+          } else {
+            pendingPromise?.reject("ERR_NO_DATA", "RD Service returned empty data", null)
+          }
+        } else {
+          pendingPromise?.reject("ERR_CANCELLED", "Biometric capture was cancelled or failed", null)
+        }
+        pendingPromise = null
+      }
+    }
   }
 }
