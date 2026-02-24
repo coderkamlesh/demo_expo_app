@@ -8,7 +8,7 @@ interface BiometricProvider {
     id: string;
     label: string;
     package: string;
-    action: string;
+    action?: string;
     modality: string;
 }
 
@@ -18,7 +18,14 @@ const Biometric = () => {
         const isInstalled = BiometricModule.isAppInstalled(provider.package);
 
         if (!isInstalled) {
-            Alert.alert("App Not Found", `${provider.label} is not installed on your device.`);
+            Alert.alert(
+                "App Not Installed",
+                `${provider.label} is not installed on your device. Do you want to download it from the Play Store?`,
+                [
+                    { text: "Cancel", style: "cancel" },
+                    { text: "Download", onPress: () => BiometricModule.openPlayStore(provider.package) }
+                ]
+            );
             return;
         }
 
@@ -30,7 +37,7 @@ const Biometric = () => {
         try {
             const result = await BiometricModule.captureBiometric(
                 provider.package,
-                provider.action,
+                provider.action || "",
                 pidOptionsXml
             );
 

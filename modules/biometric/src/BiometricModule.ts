@@ -23,6 +23,9 @@ declare class BiometricModule extends NativeModule {
   // Discovery function: string lega, boolean dega (true/false)
   isAppInstalled(packageName: string): boolean;
 
+  // Opens play store using the given packageName
+  openPlayStore(packageName: string): void;
+
   // Capture function: 3 strings lega, aur result me AEPS JSON object ka Promise dega
   captureBiometric(packageName: string, action: string, pidOptions: string): Promise<AEPSCaptureResult>;
 }

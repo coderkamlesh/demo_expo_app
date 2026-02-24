@@ -1,30 +1,50 @@
 export const BIOMETRIC_PROVIDERS = [
     {
         id: 'mantra_fp',
-        label: 'Mantra Fingerprint',
+        label: 'Mantra L0 Fingerprint',
         package: 'com.mantra.rdservice',
-        action: 'in.gov.uidai.rdservice.fp.CAPTURE',
-        modality: 'f' // f = finger
+        modality: 'f'
+    },
+    {
+        id: 'mantra_l1_fp',
+        label: 'Mantra L1 Fingerprint',
+        package: 'com.mantra.mfs110.rdservice',
+        modality: 'f'
     },
     {
         id: 'morpho_fp',
-        label: 'Morpho Fingerprint',
+        label: 'Morpho L0 Fingerprint',
         package: 'com.scl.rdservice',
-        action: 'in.gov.uidai.rdservice.fp.CAPTURE',
+        modality: 'f'
+    },
+    {
+        id: 'morpho_l1_fp',
+        label: 'Morpho L1 Fingerprint',
+        package: 'com.idemia.l1rdservice',
         modality: 'f'
     },
     {
         id: 'mantra_iris',
         label: 'Mantra Iris',
-        package: 'com.mantra.iris.rdservice',
-        action: 'in.gov.uidai.rdservice.iris.CAPTURE',
-        modality: 'i' // i = iris
+        package: 'com.mantra.mis100v2.rdservice',
+        modality: 'i'
+    },
+    {
+        id: 'precision_fp',
+        label: 'Precision Fingerprint',
+        package: 'com.precision.pb510.rdservice',
+        modality: 'f'
+    },
+    {
+        id: 'next_fp',
+        label: 'Next Biometrics Fingerprint',
+        package: 'com.nextbiometrics.onetouchrdservice',
+        modality: 'f'
     },
     {
         id: 'face_rd',
         label: 'Aadhaar Face RD',
         package: 'in.gov.uidai.facerd',
-        action: 'in.gov.uidai.facerd.main.FaceCaptureActivity',
-        modality: 'p' // p = photo/face
+        modality: 'p'
     }
 ];
