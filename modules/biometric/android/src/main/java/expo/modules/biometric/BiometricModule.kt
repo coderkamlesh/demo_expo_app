@@ -135,11 +135,30 @@ class BiometricModule : Module() {
         val extras = data.extras
         var rawXml: String? = null
 
-        // Flutter ke exact saath — pehli non-blank String value extract karo
-        extras?.keySet()?.forEach { key ->
-            val value = extras.get(key)
-            if (rawXml == null && value is String && value.isNotBlank()) {
-                rawXml = value
+        // 1. Direct fetch using standard RD Service keys
+        if (extras?.containsKey("PID_DATA") == true) {
+            rawXml = extras.getString("PID_DATA")
+        } else if (extras?.containsKey("response") == true) { // Face RD key
+            rawXml = extras.getString("response")
+        }
+
+        // 2. Fallback: Check all strings to find the XML
+        if (rawXml == null) {
+            extras?.keySet()?.forEach { key ->
+                val value = extras?.get(key)
+                if (value is String && value.isNotBlank() && (value.contains("<PidData") || value.startsWith("<?xml"))) {
+                    rawXml = value
+                }
+            }
+        }
+
+        // 3. Absolute Fallback: Grab the first non-blank string (like original behavior)
+        if (rawXml == null) {
+            extras?.keySet()?.forEach { key ->
+                val value = extras?.get(key)
+                if (rawXml == null && value is String && value.isNotBlank()) {
+                    rawXml = value
+                }
             }
         }
 
