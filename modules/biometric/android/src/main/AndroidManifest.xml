@@ -1,10 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    
-    <!-- Yeh permissions zaruri hain -->
+
+    <!-- Internet permission -->
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <queries>
-        <!-- RD SERVICES PACKAGES -->
+
+        <!-- ─────────────────────────────────────────────── -->
+        <!-- 📱 RD Service Package Queries                   -->
+        <!-- ─────────────────────────────────────────────── -->
         <package android:name="com.mantra.mfs110.rdservice"/>
         <package android:name="com.mantra.mis100v2.rdservice"/>
         <package android:name="com.idemia.l1rdservice"/>
@@ -12,15 +15,39 @@
         <package android:name="com.precision.pb510.rdservice"/>
         <package android:name="com.scl.rdservice"/>
         <package android:name="com.nextbiometrics.onetouchrdservice"/>
-        
-        <!-- Payment Apps (Agar future mein chahiye) -->
+
+        <!-- ─────────────────────────────────────────────── -->
+        <!-- 🔐 RD Service Intent Queries                    -->
+        <!-- resolveActivity() kaam karne ke liye ZARURI hai -->
+        <!-- ─────────────────────────────────────────────── -->
+        <intent>
+            <action android:name="in.gov.uidai.rdservice.fp.CAPTURE"/>
+        </intent>
+        <intent>
+            <action android:name="in.gov.uidai.rdservice.iris.CAPTURE"/>
+        </intent>
+        <intent>
+            <action android:name="in.gov.uidai.rdservice.face.CAPTURE"/>
+        </intent>
+
+        <!-- ─────────────────────────────────────────────── -->
+        <!-- 🏪 Play Store / Browser                         -->
+        <!-- ─────────────────────────────────────────────── -->
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="https"/>
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="market"/>
+        </intent>
+
+        <!-- ─────────────────────────────────────────────── -->
+        <!-- 💬 WhatsApp (Future use)                        -->
+        <!-- ─────────────────────────────────────────────── -->
         <package android:name="com.whatsapp"/>
         <package android:name="com.whatsapp.w4b"/>
-        
-        <!-- Intent queries for standard actions -->
-        <intent>
-            <action android:name="android.intent.action.VIEW" />
-            <data android:scheme="https" />
-        </intent>
+
     </queries>
+
 </manifest>
