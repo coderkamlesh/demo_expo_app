@@ -6,13 +6,16 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "platform": "android" // <--- Ye line add karein
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "platform": "android" // <--- Ye line add karein
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "platform": "android" // <--- Ye line add karein
     }
   },
   "submit": {

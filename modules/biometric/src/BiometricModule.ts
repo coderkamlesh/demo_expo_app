@@ -1,34 +1,11 @@
 import { NativeModule, requireNativeModule } from 'expo';
+import { BiometricModuleEvents, BiometricOptions } from './Biometric.types';
 
-export type AEPSCaptureResult = {
-  status: 'SUCCESS' | 'FAILURE';
-  errCode: string;
-  errInfo: string;
-  pidData: string;
-  hmac: string;
-  sessionKey: string;
-  ci: string;
-  deviceInfo: {
-    dpId: string;
-    rdsId: string;
-    rdsVer: string;
-    dc: string;
-    mi: string;
-    mc: string;
-  };
-  rawXml: string; // The original full PID block XML
-};
-
-declare class BiometricModule extends NativeModule {
-  // Discovery function: string lega, boolean dega (true/false)
+declare class BiometricModule extends NativeModule<BiometricModuleEvents> {
+  PI: number; // Yeh default rehne do, agar use nahi toh hata sakte ho
   isAppInstalled(packageName: string): boolean;
-
-  // Opens play store using the given packageName
   openPlayStore(packageName: string): void;
-
-  // Capture function: 3 strings lega, aur result me AEPS JSON object ka Promise dega
-  captureBiometric(packageName: string, action: string, pidOptions: string): Promise<AEPSCaptureResult>;
+  launchRdService(options: BiometricOptions): Promise<string>;
 }
 
-// This call loads the native module object from the JSI.
 export default requireNativeModule<BiometricModule>('Biometric');

@@ -1,19 +1,9 @@
-import type { StyleProp, ViewStyle } from 'react-native';
-
-export type OnLoadEventPayload = {
-  url: string;
+export type BiometricOptions = {
+  pkg: string;
+  pidXml: string;
 };
 
+// FIX: Events ko object format mein define karein
 export type BiometricModuleEvents = {
-  onChange: (params: ChangeEventPayload) => void;
-};
-
-export type ChangeEventPayload = {
-  value: string;
-};
-
-export type BiometricViewProps = {
-  url: string;
-  onLoad: (event: { nativeEvent: OnLoadEventPayload }) => void;
-  style?: StyleProp<ViewStyle>;
+  onChange: (event: any) => void;
 };
