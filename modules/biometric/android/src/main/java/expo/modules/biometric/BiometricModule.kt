@@ -7,6 +7,7 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.events.OnActivityResultPayload
 
 // ─────────────────────────────────────────────
 // ❌ Custom Exceptions (CodedException extend karna ZARURI hai)
@@ -68,18 +69,9 @@ class BiometricModule : Module() {
 
         // ─────────────────────────────────────────────
         // 🔐 Launch RD Service (Async with Promise)
-        // Flutter ke handleRdResult logic ka exact mirror
+        // Expo SDK 54: separate params + Promise for activity result handling
         // ─────────────────────────────────────────────
-        AsyncFunction("launchRdService") { options: Map<String, Any>, promise: Promise ->
-            val packageName = options["pkg"] as? String
-            val pidXml = options["pidXml"] as? String
-
-            if (packageName.isNullOrBlank() || pidXml.isNullOrBlank()) {
-                promise.reject(
-                    CodedException("INVALID_ARGS", "pkg or pidXml missing", null)
-                )
-                return@AsyncFunction
-            }
+        AsyncFunction("launchRdService") { pkg: String, pidXml: String, promise: Promise ->
 
             val currentActivity = appContext.currentActivity
             if (currentActivity == null) {
@@ -90,7 +82,7 @@ class BiometricModule : Module() {
             }
 
             // ─── Flutter ke exact saath match karta logic ───
-            val intentAction = when (packageName) {
+            val intentAction = when (pkg) {
                 "in.gov.uidai.facerd"            -> "in.gov.uidai.rdservice.face.CAPTURE"
                 "com.mantra.mis100v2.rdservice"  -> "in.gov.uidai.rdservice.iris.CAPTURE"
                 else                             -> "in.gov.uidai.rdservice.fp.CAPTURE"
@@ -99,7 +91,7 @@ class BiometricModule : Module() {
             val isFaceRd = intentAction == "in.gov.uidai.rdservice.face.CAPTURE"
 
             val intent = Intent(intentAction).apply {
-                `package` = packageName
+                `package` = pkg
                 putExtra(
                     if (isFaceRd) "request" else "PID_OPTIONS",
                     pidXml
@@ -116,10 +108,11 @@ class BiometricModule : Module() {
 
         // ─────────────────────────────────────────────
         // 🔄 Handle Activity Result
+        // Expo SDK 54: (Activity, OnActivityResultPayload)
         // ─────────────────────────────────────────────
-        OnActivityResult { _, requestCode, resultCode, data ->
-            if (requestCode == RD_REQUEST_CODE) {
-                handleRdResult(resultCode, data)
+        OnActivityResult { _, payload ->
+            if (payload.requestCode == RD_REQUEST_CODE) {
+                handleRdResult(payload.resultCode, payload.data)
             }
         }
     }

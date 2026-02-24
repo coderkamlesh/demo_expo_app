@@ -55,10 +55,10 @@ export default function Biometric() {
             Alert.alert("Capturing", `Launching ${selectedProvider.label}...`);
 
             // 3. Launch Native Module
-            const resultXml = await BiometricModule.launchRdService({
-                pkg: selectedProvider.package,
-                pidXml: pidXml
-            });
+            const resultXml = await BiometricModule.launchRdService(
+                selectedProvider.package,
+                pidXml
+            );
 
             console.log("✅ Captured XML:", resultXml);
             Alert.alert("Success", "Biometric captured successfully! Check console for XML.");
